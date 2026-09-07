@@ -2,6 +2,7 @@ import pymupdf, requests, streamlit as st
 from openai import OpenAI, OpenAIError, AuthenticationError, NotFoundError
 from bs4 import BeautifulSoup
 from google import genai
+from google.genai import types
 
 # Show title and description.
 st.title("📄 Mel's Webpage Summarizer")
@@ -84,7 +85,10 @@ if submitted and url:
                 # Generate content using Google Gemini API.
                 stream = client.models.generate_content(
                     model=st.session_state.model,
-                    contents=messages
+                    contents=messages,
+                    config=types.GenerateContentConfig(
+                        thinking_config=types.ThinkingConfig(thinking_level="LOW")
+                    )
                 )
 
                 # Stream the response to the app using `st.write_stream`.
