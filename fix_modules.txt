@@ -1,0 +1,5 @@
+python -m pip install -r requirements.txt
+pip install beautifulsoup4
+
+pip uninstall google-generativeai google -y
+pip install --upgrade google-genai

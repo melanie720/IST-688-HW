@@ -1,53 +1,58 @@
 import streamlit as st
-from openai import OpenAI
 
-# Show title and description.
-st.title("📄 Document question answering")
-st.write(
-    "Upload a document below and ask a question about it – GPT will answer! "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
+page1 = st.Page('HW1.py', title='Homework 1', icon=':material/description:')
+page2 = st.Page('HW2.py', title='Homework 2', icon=':material/description:', default=True)
+
+st.set_page_config(page_title='HomeworkApp', page_icon=':material/science:')
+pg = st.navigation({'Assignments': [page1, page2]}, position='top')
+
+st.sidebar.markdown("<h3 style='color:#8B0000; '>Summary Options</h3>", unsafe_allow_html=True)
+
+st.sidebar.subheader(':material/translate: Language')
+st.session_state['language_select'] = st.sidebar.selectbox(
+    'Select language:',
+    ('English', 'Spanish', 'French', 'Mandarin'),
+    index = None
 )
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
+st.sidebar.subheader(':material/summarize: Type')
+st.session_state['summary_type_select'] = st.sidebar.selectbox(
+    'Select type of summary:',
+    ('100 words', '2 connecting paragraphs', '5 bullet points'),
+    index = None
+)
+
+st.sidebar.divider()
+
+st.sidebar.subheader(':material/computer: Model Selection:')
+st.session_state['llm_select'] = st.sidebar.selectbox(
+    'Select your LLM:',
+    ('OpenAI (default)', 'Gemini')
+)
+
+st.session_state['advanced'] = st.sidebar.checkbox('Use Advanced Model')
+
+st.sidebar.write('')
+
+# Setting LLM model based on user selection:
+if st.session_state.llm_select == 'OpenAI (default)':
+    if not st.session_state.advanced:
+        st.sidebar.write("**Using OpenAI's GPT-5.4 Nano**")
+        st.sidebar.caption('• Fast, concise, low-cost')
+        st.session_state['model'] = "gpt-5.4-nano"
+    else:
+        st.sidebar.write("**Using OpenAI's GPT-5.6 Terra**")
+        st.sidebar.caption('• Detailed, thorough, a little slower')
+        st.session_state['model'] = "gpt-5.6-terra"
 else:
+    if not st.session_state.advanced:
+        st.sidebar.write("**Using Google Gemini's 3.8 Flash**")
+        st.sidebar.caption('• Fast, efficient, low-cost')
+        st.session_state['model'] = "gemini-3.8-flash"
+    else:
+        st.sidebar.write("**Using Google Gemini's 3.1 Pro**")
+        st.sidebar.caption('• Detailed, thorough, a little slower: Best for in-depth analysis')
+        st.session_state['model'] = "gemini-3.1-pro-preview"
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
 
-    # Let the user upload a file via `st.file_uploader`.
-    uploaded_file = st.file_uploader(
-        "Upload a document (.txt or .md)", type=("txt", "md")
-    )
-
-    # Ask the user for a question via `st.text_area`.
-    question = st.text_area(
-        "Now ask a question about the document!",
-        placeholder="Can you give me a short summary?",
-        disabled=not uploaded_file,
-    )
-
-    if uploaded_file and question:
-
-        # Process the uploaded file and question.
-        document = uploaded_file.read().decode()
-        messages = [
-            {
-                "role": "user",
-                "content": f"Here's a document: {document} \n\n---\n\n {question}",
-            }
-        ]
-
-        # Generate an answer using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            stream=True,
-        )
-
-        # Stream the response to the app using `st.write_stream`.
-        st.write_stream(stream)
+pg.run()
