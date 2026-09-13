@@ -230,6 +230,8 @@ with st.sidebar.container(border = True, height = "content", key = "llm_containe
                 st.session_state.model_label = format_model(st.session_state.model)
 
 # Container 3: Output Settings
+st.sidebar.caption("_Panels below only work for Homework 2:_")
+
 with st.sidebar.container(border=True, height="content", key="options_container"):
     st.write("") 
 
