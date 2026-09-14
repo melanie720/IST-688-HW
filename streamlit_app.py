@@ -223,7 +223,7 @@ with st.sidebar.container(border = True, height = "content", key = "llm_containe
                 st.caption('_• Nuanced, deepest reasoning_')
         else:
                 st.markdown(
-                    '<p style="font-size: 14px; font-weight: bold; color: black; margin-bottom: 0px;">Using Google Gemini\'s 3.1 Pro</p>',
+                    '<p style="font-size: 14px; font-weight: bold; color: black; margin-bottom: 0px;">Using Google\'s Gemini 3.1 Pro</p>',
                     unsafe_allow_html=True,
                 )
                 st.caption('_• Fast summaries at low cost_')
