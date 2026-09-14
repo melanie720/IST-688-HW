@@ -47,7 +47,7 @@ except Exception:
     st.stop()
 
 # Function for reading URLs. Cached so we don't refetch on every rerun.
-@st.cache_data(show_spinner=True)
+@st.cache_data(show_spinner=False)
 def read_url_content(url):
     if not url:
         return 'No context found. Just answer the question based on your knowledge.'
