@@ -2,7 +2,7 @@ import streamlit as st
 
 # Page Configurations
 st.set_page_config(
-    page_title='HomeworkApp', 
+    page_title='Mel\'s HomeworkApp', 
     page_icon=':material/science:', 
     layout="centered",
     menu_items={
@@ -12,9 +12,10 @@ st.set_page_config(
 
 page1 = st.Page('HW1.py', title='Homework 1', icon=':material/description:')
 page2 = st.Page('HW2.py', title='Homework 2', icon=':material/description:')
-page3 = st.Page('HW3.py', title='Homework 3', icon=':material/description:', default=True)
+page3 = st.Page('HW3.py', title='Homework 3', icon=':material/description:')
+page4 = st.Page('HW4.py', title='Homework 4', icon=':material/description:', default=True)
 
-pg = st.navigation([page1, page2, page3], position='top')
+pg = st.navigation([page1, page2, page3, page4], position='top')
 
 # CSS for Containers
 css = '''

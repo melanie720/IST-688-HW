@@ -37,7 +37,7 @@ else:
     client = genai.Client(api_key=st.secrets.GEMINI_API_KEY)
 
 # Always overwrite, so switching models swaps the client too.
-st.session_state.client = client
+st.session_state.hw3_client = client
 
 # Checking if API key is valid.
 try:
@@ -93,18 +93,18 @@ buffer = 6
 
 # If "messages" is not already in session state, we initialize it here with a message from assistant.
 # Setting other state variables.
-if "messages" not in st.session_state:
-    st.session_state.messages = [system_prompt, {"role": "assistant", "content": "How can I help you?"}]
-if "awaiting_choice" not in st.session_state:
-    st.session_state.awaiting_choice = False
-if "pending" not in st.session_state:
-    st.session_state.pending = None  # None, answer, or more_info
+if "hw3_messages" not in st.session_state:
+    st.session_state.hw3_messages = [system_prompt, {"role": "assistant", "content": "How can I help you?"}]
+if "hw3_awaiting_choice" not in st.session_state:
+    st.session_state.hw3_awaiting_choice = False
+if "hw3_pending" not in st.session_state:
+    st.session_state.hw3_pending = None  # None, answer, or more_info
 
 # For each message in st.session_state.messages, we display each message to the user.
 chat_box = st.container(border=True, height=300)
 
 with chat_box:
-    for message in st.session_state.messages:
+    for message in st.session_state.hw3_messages:
         if message["role"] == "system":
             continue
         chat_message = st.chat_message(message["role"])
@@ -117,47 +117,47 @@ prompt = st.chat_input("Say 'hey' or ask a question.")
 # If user provides a prompt, append it to messages and we are now waiting for a regular answer.
 # Clearing awaiting_choice hides the Yes/No buttons if they were showing.
 if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.awaiting_choice = False
-    st.session_state.pending = "answer"
+    st.session_state.hw3_messages.append({"role": "user", "content": prompt})
+    st.session_state.hw3_awaiting_choice = False
+    st.session_state.hw3_pending = "answer"
     st.rerun()
 
 # If we are awaiting a Yes/No choice, show the buttons.
 # "ui_only" messages display in the chat but are kept out of the model's context.
-if st.session_state.awaiting_choice:
+if st.session_state.hw3_awaiting_choice:
     with st.container(horizontal=True):
         # If user chooses Yes, append 'Yes' to messages, change awaiting choice back to False and we are now waiting for a "more_info" answer.
-        if st.button("Yes", type="primary", key="yes_button"):
-            st.session_state.messages.append({"role": "user", "content": "Yes", "ui_only": True})
-            st.session_state.awaiting_choice = False
-            st.session_state.pending = "more_info"
+        if st.button("Yes", type="primary", key="hw3_yes_button"):
+            st.session_state.hw3_messages.append({"role": "user", "content": "Yes", "ui_only": True})
+            st.session_state.hw3_awaiting_choice = False
+            st.session_state.hw3_pending = "more_info"
             st.rerun()
         # If user chooses No, append 'No' to messages, change awaiting choice back to False and we go back to the initial 'help' message from the bot.
-        if st.button("No", type="primary", key="no_button"):
-            st.session_state.messages.append({"role": "user", "content": "No", "ui_only": True})
+        if st.button("No", type="primary", key="hw3_no_button"):
+            st.session_state.hw3_messages.append({"role": "user", "content": "No", "ui_only": True})
             # Go back to asking what the bot can help with.
-            st.session_state.messages.append(
+            st.session_state.hw3_messages.append(
                 {"role": "assistant", "content": "What else can I help you with?", "ui_only": True}
             )
-            st.session_state.awaiting_choice = False
+            st.session_state.hw3_awaiting_choice = False
             st.rerun()
 
 # Generate a response, either a normal answer or a "more info".
-if st.session_state.pending:
+if st.session_state.hw3_pending:
 
     # System prompt is pinned separately; the buffer applies to the real conversation,
     # skipping any ui_only filler.
-    history = [m for m in st.session_state.messages[1:] if not m.get("ui_only")][-buffer:]
+    history = [m for m in st.session_state.hw3_messages[1:] if not m.get("ui_only")][-buffer:]
 
     if st.session_state.model == 'gpt-6-astra':
         messages = [{"role": "system", "content": system_prompt["content"]}]
         messages += [{"role": m["role"], "content": m["content"]} for m in history]
 
         # On a "more info" answer, add the extra instruction at the end of the request.
-        if st.session_state.pending == "more_info":
+        if st.session_state.hw3_pending == "more_info":
             messages.append(more_info_prompt)
 
-        stream = st.session_state.client.chat.completions.create(
+        stream = st.session_state.hw3_client.chat.completions.create(
             model=st.session_state.model,
             messages=messages,
             stream=True,
@@ -170,12 +170,12 @@ if st.session_state.pending:
             for m in history
         ]
 
-        if st.session_state.pending == "more_info":
+        if st.session_state.hw3_pending == "more_info":
             input_steps.append(
                 {"type": "user_input", "content": [{"type": "text", "text": more_info_prompt["content"]}]}
             )
 
-        interaction = st.session_state.client.interactions.create(
+        interaction = st.session_state.hw3_client.interactions.create(
             model=st.session_state.model,
             system_instruction=system_prompt["content"],
             input=input_steps,
@@ -189,11 +189,11 @@ if st.session_state.pending:
             response = st.write_stream(stream)
 
     # Store the answer and ask the follow-up question.
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    st.session_state.messages.append(
+    st.session_state.hw3_messages.append({"role": "assistant", "content": response})
+    st.session_state.hw3_messages.append(
         {"role": "assistant", "content": "Do you want more info?", "ui_only": True}
     )
 
-    st.session_state.pending = None
-    st.session_state.awaiting_choice = True
+    st.session_state.hw3_pending = None
+    st.session_state.hw3_awaiting_choice = True
     st.rerun()

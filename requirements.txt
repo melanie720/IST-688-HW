@@ -1,5 +1,10 @@
+pysqlite3-binary
 streamlit
 openai
-pymupdf
+chromadb
+PyPDF2
+PyMuPDF
+protobuf==3.20
 beautifulsoup4
 google-genai
+tiktoken
