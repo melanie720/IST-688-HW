@@ -13,9 +13,10 @@ st.set_page_config(
 page1 = st.Page('HW1.py', title='Homework 1', icon=':material/description:')
 page2 = st.Page('HW2.py', title='Homework 2', icon=':material/description:')
 page3 = st.Page('HW3.py', title='Homework 3', icon=':material/description:')
-page4 = st.Page('HW4.py', title='Homework 4', icon=':material/description:', default=True)
+page4 = st.Page('HW4.py', title='Homework 4', icon=':material/description:')
+page5 = st.Page('HW5.py', title='Homework 5', icon=':material/description:', default=True)
 
-pg = st.navigation([page1, page2, page3, page4], position='top')
+pg = st.navigation([page1, page2, page3, page4, page5], position='top')
 
 # CSS for Containers
 css = '''
@@ -137,6 +138,8 @@ def mark_submitted():
 st.sidebar.header(":material/settings: Summary Options")
 
 # Container 1: Summary Settings
+st.sidebar.caption("_Panels below only work for Homework 3:_")
+
 with st.sidebar.container(border=True, height="content", key="summary_container"):
     st.write("")
 
